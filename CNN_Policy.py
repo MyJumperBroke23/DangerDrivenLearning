@@ -53,7 +53,7 @@ class Memory:  # Stores actions, states, probs, and rewards
         return self.action, self.state, self.logprob, self.reward
 
 
-class PPO:
+class PPO_Policy:
     def __init__(self, output_dim, discount, clip_factor, learning_rate):
         self.memory = Memory()
         self.model = CNN_Policy(output_dim)
@@ -109,7 +109,7 @@ update = 10
 k = 3
 num_episodes = 10000
 
-Agent = PPO(output_dim=1, discount=disc, clip_factor=clip_f, learning_rate=lr)
+# Agent = PPO(output_dim=1, discount=disc, clip_factor=clip_f, learning_rate=lr)
 
 initial_variance = 20
 final_variance = 1
