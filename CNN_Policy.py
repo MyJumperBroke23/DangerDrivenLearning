@@ -20,7 +20,7 @@ class CNN_Policy(nn.Module):
         self.bn3 = nn.BatchNorm2d(32)
         self.linear = nn.Linear(950400, output_dim)
 
-        self.linear.bias.data[0] = 500
+
 
     def forward(self, x): # Outputs mean of Gaussian distribution
         x = F.relu(self.bn1(self.conv1(x)))
