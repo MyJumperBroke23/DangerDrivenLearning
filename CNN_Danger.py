@@ -4,7 +4,6 @@ import torch.optim as optim
 import torch.nn.functional as F
 import numpy as np
 from torch.distributions import Normal
-from CNN_Policy import Memory
 import math
 import time
 import os
@@ -31,9 +30,30 @@ class CNN_Danger(nn.Module):
         return F.relu(self.linear(x))
 
 
+class Memory:  # Stores actions, states, probs, and rewards
+    def __init__(self):
+        self.action = []
+        self.state = []
+        self.logprob = []
+        self.reward = []
+
+    def add(self, action, state, logprob, reward):
+        self.action.append(action)
+        self.state.append(state)
+        self.logprob.append(logprob)
+        self.reward.append(reward)
+
+    def clear_mem(self):
+        self.action.clear()
+        self.state.clear()
+        self.logprob.clear()
+        self.reward.clear()
+
+    def return_mem(self):
+        return self.action, self.state, self.logprob, self.reward
 
 
-class PPO_Danger:
+class PPO:
     def __init__(self, output_dim, discount, clip_factor, learning_rate):
         self.memory = Memory()
         self.model = CNN_Danger(output_dim)
@@ -89,7 +109,7 @@ update = 10
 k = 3
 num_episodes = 10000
 
-Agent = PPO_Danger(output_dim=1, discount=disc, clip_factor=clip_f, learning_rate=lr)
+Agent = PPO(output_dim=1, discount=disc, clip_factor=clip_f, learning_rate=lr)
 
 initial_variance = 20
 final_variance = 1
