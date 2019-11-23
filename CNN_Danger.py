@@ -102,17 +102,6 @@ class PPO:
         self.optimizer.load_state_dict(save["optimizer"])
 
 
-disc = 0.99
-clip_f = 0.2
-lr = 3e-4
-update = 10
-k = 3
-num_episodes = 10000
 
-Agent = PPO(output_dim=1, discount=disc, clip_factor=clip_f, learning_rate=lr)
-
-initial_variance = 20
-final_variance = 1
-variance_decay = 5000
 
 
