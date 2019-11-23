@@ -6,8 +6,6 @@ import numpy as np
 from torch.distributions import Normal
 import random
 import math
-import time
-import os
 
 
 class CNN_Policy(nn.Module):
@@ -29,7 +27,7 @@ class CNN_Policy(nn.Module):
         return F.relu(self.linear(x))
 
 
-def select_action(state, initial_epsilon, final_epsilon, steps_done, epsilon_decay):
+def select_action(state, initial_epsilon, final_epsilon, steps_done, epsilon_decay, model):
     sample = random.random()
     eps_threshold = final_epsilon + (initial_epsilon - final_epsilon) * \
                     math.exp(-1. * steps_done / epsilon_decay)
@@ -41,21 +39,8 @@ def select_action(state, initial_epsilon, final_epsilon, steps_done, epsilon_dec
             node_activated = int(torch.argmax(q_calc))
             return node_activated
     else:
-        node_activated = random.randint(0,1)
+        node_activated = random.randint(0,10)
         steps_done += 1
         return node_activated
-
-disc = 0.99
-clip_f = 0.2
-lr = 3e-4
-update = 10
-k = 3
-num_episodes = 10000
-
-# Agent = PPO(output_dim=1, discount=disc, clip_factor=clip_f, learning_rate=lr)
-
-initial_variance = 20
-final_variance = 1
-variance_decay = 5000
 
 
