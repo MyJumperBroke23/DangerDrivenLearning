@@ -53,7 +53,7 @@ class Memory:  # Stores actions, states, probs, and rewards
         return self.action, self.state, self.logprob, self.reward
 
 
-class PPO:
+class Danger:
     def __init__(self, output_dim, discount, clip_factor, learning_rate):
         self.memory = Memory()
         self.model = CNN_Danger(output_dim)

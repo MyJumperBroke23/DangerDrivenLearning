@@ -18,8 +18,8 @@ for run in range(5000):
     for step in range(5000):
         if done:
             state = env.reset()
-        time.sleep(0.1);
+        #time.sleep(0.1);
         state, reward, done, info = env.step(env.action_space.sample())
-        print(env.action_space);
+        #print(env.action_space);
         env.render()
     env.close()
