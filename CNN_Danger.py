@@ -20,14 +20,12 @@ class CNN_Danger(nn.Module):
         self.bn3 = nn.BatchNorm2d(32)
         self.linear = nn.Linear(950400, output_dim)
 
-        self.linear.bias.data[0] = 500
-
     def forward(self, x): # Outputs mean of Gaussian distribution
         x = F.relu(self.bn1(self.conv1(x)))
         x = F.relu(self.bn2(self.conv2(x)))
         x = F.relu(self.bn3(self.conv3(x)))
         x = x.view(x.size(0), -1)
-        return F.relu(self.linear(x))
+        return F.sigmoid(self.linear(x))
 
 
 class Memory:  # Stores actions, states, probs, and rewards
