@@ -12,7 +12,7 @@ DISCOUNT = 0.99
 LEARNING_RATE = 1e-4
 INITIAL_EPSILON = 1
 FINAL_EPSILON = 0.01
-EPSILON_DECAY = 10000
+EPSILON_DECAY = 1000000
 
 danger_network = Danger(1, DISCOUNT, 0.3, LEARNING_RATE) #output_dim, discount, clip_factor, learning_rate)
 policy_network = Policy(7, DISCOUNT, LEARNING_RATE, INITIAL_EPSILON, FINAL_EPSILON,
@@ -30,6 +30,7 @@ for run in range(5000):
         print("Update here")
     # Step through run
     done = True
+    #print("Run: ", run)
     for step in range(5000):
         if done:
             state = env.reset()
@@ -38,8 +39,11 @@ for run in range(5000):
         prev_state = state
         state, reward, done, info = env.step(action) #env.action_space.sample()
         policy_network.add_mem(prev_state, reward, action, state, done) # state, reward, action, next_state, done)
-        policy_network.optimize_model()
+        if step % 8 == 0:
+            policy_network.optimize_model()
         #print(env.action_space);
-        #env.render()
-        print(step)
+        env.render()
+        print("Run:", run, "Step: ", step, "Reward: ", reward)
+    if run == 100:
+        policy_network.save_agent("PolNoDanger1.pth")
     env.close()

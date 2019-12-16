@@ -30,24 +30,6 @@ class CNN_Policy(nn.Module):
         #print(F.relu(self.linear(x)))
         return F.relu(self.linear(x))
 
-
-def select_action(state, initial_epsilon, final_epsilon, steps_done, epsilon_decay, model):
-    sample = random.random()
-    eps_threshold = final_epsilon + (initial_epsilon - final_epsilon) * \
-                    math.exp(-1. * steps_done / epsilon_decay)
-    if sample > eps_threshold:
-        with torch.no_grad():
-            state = torch.Tensor(state)
-            steps_done += 1
-            q_calc = model(state)
-            node_activated = int(torch.argmax(q_calc))
-            return node_activated
-    else:
-        node_activated = random.randint(0,10)
-        steps_done += 1
-        return node_activated
-
-
 class ReplayMemory(object): # Stores [state, reward, action, next_state, done]
 
     def __init__(self, capacity):
@@ -74,7 +56,7 @@ class ReplayMemory(object): # Stores [state, reward, action, next_state, done]
 
 class Policy:
     def __init__(self, output_dim, discount, learning_rate, eps_i, eps_f, eps_d):
-        self.memory = ReplayMemory(1024)
+        self.memory = ReplayMemory(524288)
         self.model = CNN_Policy(output_dim)
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=learning_rate)
         self.loss_fn = nn.MSELoss()
@@ -119,15 +101,11 @@ class Policy:
 
         pred_q = self.model(state_batch).gather(1, action_batch)
 
-        next_state_q_vals = torch.zeros(self.BATCH_SIZE)
+        next_state_q_vals = self.discount * self.model(next_state_batch).max(1)[0]
 
-        for idx, next_state in enumerate(next_state_batch):
-            if done_batch[idx] == True:
-                next_state_q_vals[idx] = -1
-            else:
-                # .max in pytorch returns (values, idx), we only want vals
-                next_state_q_vals[idx] = self.model(next_state_batch[idx])[0].max(0)[0]
-                #print(next_state_q_vals[idx])
+        for idx, done in enumerate(done_batch):
+            if done:
+                next_state_q_vals[idx] = 0
 
         better_pred = (reward_batch + next_state_q_vals).unsqueeze(1)
 
@@ -138,6 +116,15 @@ class Policy:
             param.grad.data.clamp_(-1, 1)
         self.optimizer.step()
         return loss
+
+    def save_agent(self, name):
+        save = {'state_dict': self.model.state_dict(), 'optimizer': self.optimizer.state_dict()}
+        torch.save(save, name)
+
+    def load_agent(self, load):
+        save = torch.load(load)
+        self.model.load_state_dict(save["state_dict"])
+        self.optimizer.load_state_dict(save["optimizer"])
 
 
 
