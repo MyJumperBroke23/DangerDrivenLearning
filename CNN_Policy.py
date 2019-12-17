@@ -3,7 +3,6 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
 import numpy as np
-from torch.distributions import Normal
 import random
 import math
 
@@ -27,11 +26,10 @@ class CNN_Policy(nn.Module):
         x = F.relu(self.bn2(self.conv2(x)))
         x = F.relu(self.bn3(self.conv3(x)))
         x = x.view(x.size(0), -1)
-        #print(F.relu(self.linear(x)))
         return F.relu(self.linear(x))
 
-class ReplayMemory(object): # Stores [state, reward, action, next_state, done]
 
+class ReplayMemory(object): # Stores [state, reward, action, next_state, done]
     def __init__(self, capacity):
         self.capacity = capacity
         self.memory = [[],[],[],[],[]]
@@ -39,7 +37,6 @@ class ReplayMemory(object): # Stores [state, reward, action, next_state, done]
     def push(self, data):
         """Saves a transition."""
         for idx, point in enumerate(data):
-            #print("Col {} appended {}".format(idx, point))
             self.memory[idx].append(point)
 
     def sample(self, batch_size):
@@ -97,10 +94,9 @@ class Policy:
         next_state_batch = torch.Tensor(experiences[3])
         done_batch = experiences[4]
 
-        #print(self.model(state_batch))
-
+        # Get predicted q of actions taken
         pred_q = self.model(state_batch).gather(1, action_batch)
-
+        # Get max q of all actions in next state
         next_state_q_vals = self.discount * self.model(next_state_batch).max(1)[0]
 
         for idx, done in enumerate(done_batch):

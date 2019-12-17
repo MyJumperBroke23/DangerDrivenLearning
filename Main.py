@@ -42,8 +42,13 @@ for run in range(5000):
         if step % 8 == 0:
             policy_network.optimize_model()
         #print(env.action_space);
-        env.render()
+        #env.render()
         print("Run:", run, "Step: ", step, "Reward: ", reward)
-    if run == 100:
+    if run == 10:
         policy_network.save_agent("PolNoDanger1.pth")
-    env.close()
+    if run == 20:
+        policy_network.save_agent("PolNoDanger2.pth")
+    if run == 50:
+        policy_network.save_agent("PolNoDanger5.pth")
+
+env.close()
